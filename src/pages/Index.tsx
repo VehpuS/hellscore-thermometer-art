@@ -7,6 +7,8 @@ const Index = () => {
   const [goal, setGoal] = useState(10000);
   const [current, setCurrent] = useState(6500);
   const [currency, setCurrency] = useState('USD');
+  const [customSymbol, setCustomSymbol] = useState('🔥');
+  const [symbolPosition, setSymbolPosition] = useState<'before' | 'after'>('before');
   const [title, setTitle] = useState('Hellscore Summer Tour');
   const [colorScheme, setColorScheme] = useState<'classic' | 'inferno' | 'ember'>('inferno');
   const [showPercentage, setShowPercentage] = useState(true);
@@ -34,6 +36,10 @@ const Index = () => {
               setCurrent={setCurrent}
               currency={currency}
               setCurrency={setCurrency}
+              customSymbol={customSymbol}
+              setCustomSymbol={setCustomSymbol}
+              symbolPosition={symbolPosition}
+              setSymbolPosition={setSymbolPosition}
               title={title}
               setTitle={setTitle}
               colorScheme={colorScheme}
@@ -52,6 +58,8 @@ const Index = () => {
               goal={goal}
               current={current}
               currency={currency}
+              customSymbol={customSymbol}
+              symbolPosition={symbolPosition}
               title={title}
               colorScheme={colorScheme}
               showPercentage={showPercentage}

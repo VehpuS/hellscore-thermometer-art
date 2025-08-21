@@ -14,6 +14,10 @@ interface ThermometerControlsProps {
   setCurrent: (current: number) => void;
   currency: string;
   setCurrency: (currency: string) => void;
+  customSymbol: string;
+  setCustomSymbol: (symbol: string) => void;
+  symbolPosition: 'before' | 'after';
+  setSymbolPosition: (position: 'before' | 'after') => void;
   title: string;
   setTitle: (title: string) => void;
   colorScheme: 'classic' | 'inferno' | 'ember';
@@ -32,6 +36,10 @@ export const ThermometerControls = ({
   setCurrent,
   currency,
   setCurrency,
+  customSymbol,
+  setCustomSymbol,
+  symbolPosition,
+  setSymbolPosition,
   title,
   setTitle,
   colorScheme,
@@ -43,6 +51,46 @@ export const ThermometerControls = ({
   onExport
 }: ThermometerControlsProps) => {
   const [activeTab, setActiveTab] = useState<'basic' | 'style'>('basic');
+
+  // Comprehensive list of browser-supported currencies
+  const currencies = [
+    { code: 'USD', name: 'US Dollar', symbol: '$' },
+    { code: 'EUR', name: 'Euro', symbol: '€' },
+    { code: 'GBP', name: 'British Pound', symbol: '£' },
+    { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
+    { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
+    { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
+    { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF' },
+    { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
+    { code: 'SEK', name: 'Swedish Krona', symbol: 'kr' },
+    { code: 'NOK', name: 'Norwegian Krone', symbol: 'kr' },
+    { code: 'MXN', name: 'Mexican Peso', symbol: '$' },
+    { code: 'SGD', name: 'Singapore Dollar', symbol: 'S$' },
+    { code: 'HKD', name: 'Hong Kong Dollar', symbol: 'HK$' },
+    { code: 'NZD', name: 'New Zealand Dollar', symbol: 'NZ$' },
+    { code: 'KRW', name: 'South Korean Won', symbol: '₩' },
+    { code: 'TRY', name: 'Turkish Lira', symbol: '₺' },
+    { code: 'RUB', name: 'Russian Ruble', symbol: '₽' },
+    { code: 'INR', name: 'Indian Rupee', symbol: '₹' },
+    { code: 'BRL', name: 'Brazilian Real', symbol: 'R$' },
+    { code: 'ZAR', name: 'South African Rand', symbol: 'R' },
+    { code: 'PLN', name: 'Polish Złoty', symbol: 'zł' },
+    { code: 'CZK', name: 'Czech Koruna', symbol: 'Kč' },
+    { code: 'DKK', name: 'Danish Krone', symbol: 'kr' },
+    { code: 'HUF', name: 'Hungarian Forint', symbol: 'Ft' },
+    { code: 'ILS', name: 'Israeli Shekel', symbol: '₪' },
+    { code: 'CLP', name: 'Chilean Peso', symbol: '$' },
+    { code: 'PHP', name: 'Philippine Peso', symbol: '₱' },
+    { code: 'AED', name: 'UAE Dirham', symbol: 'د.إ' },
+    { code: 'COP', name: 'Colombian Peso', symbol: '$' },
+    { code: 'SAR', name: 'Saudi Riyal', symbol: '﷼' },
+    { code: 'MYR', name: 'Malaysian Ringgit', symbol: 'RM' },
+    { code: 'RON', name: 'Romanian Leu', symbol: 'lei' },
+    { code: 'THB', name: 'Thai Baht', symbol: '฿' },
+    { code: 'BGN', name: 'Bulgarian Lev', symbol: 'лв' },
+    { code: 'HRK', name: 'Croatian Kuna', symbol: 'kn' },
+    { code: 'CUSTOM', name: 'Custom Currency', symbol: '' }
+  ];
 
   return (
     <Card className="p-6 bg-card border-border">
@@ -127,15 +175,57 @@ export const ThermometerControls = ({
               <SelectTrigger className="mt-2">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="USD">USD ($)</SelectItem>
-                <SelectItem value="EUR">EUR (€)</SelectItem>
-                <SelectItem value="GBP">GBP (£)</SelectItem>
-                <SelectItem value="CAD">CAD ($)</SelectItem>
-                <SelectItem value="AUD">AUD ($)</SelectItem>
+              <SelectContent className="max-h-60">
+                {currencies.map((curr) => (
+                  <SelectItem key={curr.code} value={curr.code}>
+                    {curr.code === 'CUSTOM' ? curr.name : `${curr.code} (${curr.symbol}) - ${curr.name}`}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
+
+          {/* Custom Currency Fields */}
+          {currency === 'CUSTOM' && (
+            <div className="space-y-4 p-4 bg-muted rounded-lg border border-border">
+              <div>
+                <Label htmlFor="customSymbol" className="text-base font-metal">
+                  Custom Currency Symbol
+                </Label>
+                <Input
+                  id="customSymbol"
+                  value={customSymbol}
+                  onChange={(e) => setCustomSymbol(e.target.value)}
+                  placeholder="$ € ¥ ₿ 🔥 etc."
+                  className="mt-2"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-base font-metal">
+                  Symbol Position
+                </Label>
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    type="button"
+                    variant={symbolPosition === 'before' ? 'default' : 'outline'}
+                    onClick={() => setSymbolPosition('before')}
+                    size="sm"
+                  >
+                    Before ({customSymbol || '$'}1,000)
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={symbolPosition === 'after' ? 'default' : 'outline'}
+                    onClick={() => setSymbolPosition('after')}
+                    size="sm"
+                  >
+                    After (1,000{customSymbol || '$'})
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

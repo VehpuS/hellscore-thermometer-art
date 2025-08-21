@@ -5,6 +5,8 @@ interface ThermometerPreviewProps {
   goal: number;
   current: number;
   currency: string;
+  customSymbol: string;
+  symbolPosition: 'before' | 'after';
   title: string;
   colorScheme: 'classic' | 'inferno' | 'ember';
   showPercentage: boolean;
@@ -15,6 +17,8 @@ export const ThermometerPreview = ({
   goal,
   current,
   currency,
+  customSymbol,
+  symbolPosition,
   title,
   colorScheme,
   showPercentage,
@@ -31,12 +35,33 @@ export const ThermometerPreview = ({
   }, [current]);
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
+    if (currency === 'CUSTOM') {
+      const formattedNumber = new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(amount);
+      
+      const symbol = customSymbol || '$';
+      return symbolPosition === 'before' 
+        ? `${symbol}${formattedNumber}`
+        : `${formattedNumber}${symbol}`;
+    }
+    
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency || 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(amount);
+    } catch (error) {
+      // Fallback for unsupported currencies
+      const formattedNumber = new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(amount);
+      return `${currency} ${formattedNumber}`;
+    }
   };
 
   const getThermometerColors = () => {
