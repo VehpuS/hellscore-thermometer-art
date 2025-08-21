@@ -81,6 +81,12 @@ export default {
 				'glow-intense': 'var(--glow-intense)'
 			},
 			fontFamily: {
+				'inter': ['Inter', 'sans-serif'],
+				'roboto': ['Roboto', 'sans-serif'],
+				'opensans': ['Open Sans', 'sans-serif'],
+				'montserrat': ['Montserrat', 'sans-serif'],
+				'poppins': ['Poppins', 'sans-serif'],
+				'source': ['Source Sans Pro', 'sans-serif'],
 				'hellscore': ['Creepster', 'cursive'],
 				'infernal': ['Nosifer', 'cursive'],
 				'metal': ['Metal Mania', 'cursive']

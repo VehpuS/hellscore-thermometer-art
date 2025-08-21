@@ -26,6 +26,8 @@ interface ThermometerControlsProps {
   setShowPercentage: (show: boolean) => void;
   showFlames: boolean;
   setShowFlames: (show: boolean) => void;
+  fontFamily: string;
+  setFontFamily: (font: string) => void;
   onExport: () => void;
 }
 
@@ -48,6 +50,8 @@ export const ThermometerControls = ({
   setShowPercentage,
   showFlames,
   setShowFlames,
+  fontFamily,
+  setFontFamily,
   onExport
 }: ThermometerControlsProps) => {
   const [activeTab, setActiveTab] = useState<'basic' | 'style'>('basic');
@@ -90,6 +94,18 @@ export const ThermometerControls = ({
     { code: 'BGN', name: 'Bulgarian Lev', symbol: 'лв' },
     { code: 'HRK', name: 'Croatian Kuna', symbol: 'kn' },
     { code: 'CUSTOM', name: 'Custom Currency', symbol: '' }
+  ];
+
+  const fontOptions = [
+    { value: 'inter', name: 'Inter (Modern)', family: 'font-inter' },
+    { value: 'roboto', name: 'Roboto (Clean)', family: 'font-roboto' },
+    { value: 'opensans', name: 'Open Sans (Friendly)', family: 'font-opensans' },
+    { value: 'montserrat', name: 'Montserrat (Geometric)', family: 'font-montserrat' },
+    { value: 'poppins', name: 'Poppins (Rounded)', family: 'font-poppins' },
+    { value: 'source', name: 'Source Sans Pro (Professional)', family: 'font-source' },
+    { value: 'metal', name: 'Metal Mania (Gothic)', family: 'font-metal' },
+    { value: 'hellscore', name: 'Creepster (Horror)', family: 'font-hellscore' },
+    { value: 'infernal', name: 'Nosifer (Infernal)', family: 'font-infernal' }
   ];
 
   return (
@@ -292,6 +308,24 @@ export const ThermometerControls = ({
                 onCheckedChange={setShowFlames}
               />
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="fontFamily" className="text-base font-metal">
+              Font Style
+            </Label>
+            <Select value={fontFamily} onValueChange={setFontFamily}>
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder="Select font style" />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                {fontOptions.map((font) => (
+                  <SelectItem key={font.value} value={font.value}>
+                    <span className={font.family}>{font.name}</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       )}

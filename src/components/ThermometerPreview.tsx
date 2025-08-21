@@ -11,6 +11,7 @@ interface ThermometerPreviewProps {
   colorScheme: 'classic' | 'inferno' | 'ember';
   showPercentage: boolean;
   showFlames: boolean;
+  fontFamily: string;
 }
 
 export const ThermometerPreview = ({
@@ -22,7 +23,8 @@ export const ThermometerPreview = ({
   title,
   colorScheme,
   showPercentage,
-  showFlames
+  showFlames,
+  fontFamily
 }: ThermometerPreviewProps) => {
   const [animatedCurrent, setAnimatedCurrent] = useState(0);
   const percentage = goal > 0 ? Math.min((current / goal) * 100, 100) : 0;
@@ -92,11 +94,28 @@ export const ThermometerPreview = ({
 
   const colors = getThermometerColors();
 
+  const getFontClass = () => {
+    const fontMap: Record<string, string> = {
+      'inter': 'font-inter',
+      'roboto': 'font-roboto',
+      'opensans': 'font-opensans',
+      'montserrat': 'font-montserrat',
+      'poppins': 'font-poppins',
+      'source': 'font-source',
+      'metal': 'font-metal',
+      'hellscore': 'font-hellscore',
+      'infernal': 'font-infernal'
+    };
+    return fontMap[fontFamily] || 'font-inter';
+  };
+
+  const fontClass = getFontClass();
+
   return (
     <div className="relative bg-card rounded-xl p-8 border border-border shadow-ember">
       {/* Title */}
       <div className="text-center mb-6">
-        <h2 className="font-hellscore text-3xl mb-2 text-hell-fire flame-flicker">
+        <h2 className={`${fontClass} text-3xl mb-2 text-hell-fire font-bold ${showFlames ? 'flame-flicker' : ''}`}>
           {title || 'Hellscore Fundraiser'}
         </h2>
         {showFlames && (
@@ -110,11 +129,11 @@ export const ThermometerPreview = ({
 
       {/* Goal Display */}
       <div className="text-center mb-6">
-        <div className="font-metal text-xl text-muted-foreground mb-2">
+        <div className={`${fontClass} text-xl text-muted-foreground mb-2`}>
           Goal: {formatCurrency(goal)}
         </div>
         {showPercentage && (
-          <div className={`font-bold text-2xl ${colors.text}`}>
+          <div className={`${fontClass} font-bold text-2xl ${colors.text}`}>
             {percentage.toFixed(1)}% Complete
           </div>
         )}
@@ -145,7 +164,7 @@ export const ThermometerPreview = ({
               style={{ bottom: `${20 + (marker * 3.2)}px` }}
             >
               <div className={`w-4 h-0.5 ${colors.border} bg-border mr-2`} />
-              <span className="text-sm font-metal text-muted-foreground whitespace-nowrap">
+              <span className={`text-sm ${fontClass} text-muted-foreground whitespace-nowrap`}>
                 {formatCurrency((goal * marker) / 100)}
               </span>
             </div>
@@ -155,10 +174,10 @@ export const ThermometerPreview = ({
 
       {/* Current Amount Display */}
       <div className="text-center">
-        <div className="font-metal text-lg text-muted-foreground mb-1">
+        <div className={`${fontClass} text-lg text-muted-foreground mb-1`}>
           Raised so far:
         </div>
-        <div className={`font-bold text-3xl ${colors.text} flame-flicker`}>
+        <div className={`${fontClass} font-bold text-3xl ${colors.text} ${showFlames ? 'flame-flicker' : ''}`}>
           {formatCurrency(animatedCurrent)}
         </div>
       </div>

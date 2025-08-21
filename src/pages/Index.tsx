@@ -13,6 +13,7 @@ const Index = () => {
   const [colorScheme, setColorScheme] = useState<'classic' | 'inferno' | 'ember'>('inferno');
   const [showPercentage, setShowPercentage] = useState(true);
   const [showFlames, setShowFlames] = useState(true);
+  const [fontFamily, setFontFamily] = useState('inter');
 
   const handleExport = () => {
     // For now, just show a success message
@@ -48,6 +49,8 @@ const Index = () => {
               setShowPercentage={setShowPercentage}
               showFlames={showFlames}
               setShowFlames={setShowFlames}
+              fontFamily={fontFamily}
+              setFontFamily={setFontFamily}
               onExport={handleExport}
             />
           </div>
@@ -64,6 +67,7 @@ const Index = () => {
               colorScheme={colorScheme}
               showPercentage={showPercentage}
               showFlames={showFlames}
+              fontFamily={fontFamily}
             />
           </div>
         </div>
