@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { ThermometerControls } from '@/components/ThermometerControls';
-import { ThermometerPreview } from '@/components/ThermometerPreview';
+import { ThermometerControls } from '@/components/Loveable/ThermometerControls';
+import { ThermometerPreview } from '@/components/Loveable/ThermometerPreview';
 import { toast } from '@/hooks/use-toast';
 
-const Index = () => {
+const Loveable = () => {
   const [goal, setGoal] = useState(10000);
   const [current, setCurrent] = useState(6500);
   const [currency, setCurrency] = useState('USD');
@@ -76,4 +76,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Loveable;
