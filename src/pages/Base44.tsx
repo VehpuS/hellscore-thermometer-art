@@ -1,6 +1,14 @@
 import { motion } from "framer-motion";
 import { Download, Flame, Zap } from "lucide-react";
 import { useRef, useState } from "react";
+import {
+  BooleanParam,
+  NumberParam,
+  StringParam,
+  useQueryParams,
+  withDefault,
+  type QueryParamConfig,
+} from "use-query-params";
 
 import CustomizationPanel from "@/components/CustomizationPanel";
 import ExportModal from "@/components/ExportModal";
@@ -9,26 +17,45 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Design } from "@/types/design";
 
+const designDefaults: Design = {
+  goal: 10000,
+  current: 3500,
+  currency: "ILS", // Changed default currency
+  customSymbol: "",
+  symbolPosition: "before",
+  title: "HELLSCORE FUNDRAISER",
+  subtitle: "Support ...",
+  theme: "hellfire",
+  fontStyle: "gothic",
+  showPercentage: true,
+  customMessage: "Help us ...",
+  scale: 1,
+  rotation: 0,
+  showFlames: true,
+};
+
 export default function Home() {
-  const [design, setDesign] = useState<Design>({
-    goal: 10000,
-    current: 3500,
-    currency: "ILS", // Changed default currency
-    customSymbol: "",
-    symbolPosition: "before",
-    title: "HELLSCORE FUNDRAISER",
-    subtitle: "Support ...",
-    theme: "hellfire",
-    fontStyle: "gothic",
-    showPercentage: true,
-    customMessage: "Help us ...",
-    scale: 1,
-    rotation: 0,
-    showFlames: true,
+  const [design, setDesign] = useQueryParams({
+    goal: withDefault(NumberParam, designDefaults.goal),
+    current: withDefault(NumberParam, designDefaults.current),
+    currency: withDefault(StringParam, designDefaults.currency),
+    customSymbol: withDefault(StringParam, designDefaults.customSymbol),
+    symbolPosition: withDefault(
+      StringParam as QueryParamConfig<Design["symbolPosition"]>,
+      designDefaults.symbolPosition
+    ),
+    title: withDefault(StringParam, designDefaults.title),
+    subtitle: withDefault(StringParam, designDefaults.subtitle),
+    theme: withDefault(StringParam, designDefaults.theme),
+    fontStyle: withDefault(StringParam, designDefaults.fontStyle),
+    showPercentage: withDefault(BooleanParam, designDefaults.showPercentage),
+    customMessage: withDefault(StringParam, designDefaults.customMessage),
+    scale: withDefault(NumberParam, designDefaults.scale),
+    rotation: withDefault(NumberParam, designDefaults.rotation),
+    showFlames: withDefault(BooleanParam, designDefaults.showFlames),
   });
 
   const [showExportModal, setShowExportModal] = useState(false);
-  const [savedDesigns, setSavedDesigns] = useState([]);
   const previewRef = useRef(null);
 
   const handleDesignChange = (field, value) => {
