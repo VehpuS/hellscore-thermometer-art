@@ -15,7 +15,7 @@ import ExportModal from "@/components/ExportModal";
 import ThermometerPreview from "@/components/ThermometerPreview";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { designDefaults, type Design } from "@/types/design";
+import { designDefaults, sizeOptions, type Design } from "@/types/design";
 
 const headerHeight = "100px";
 const pageComponentsPadding = "2rem";
@@ -52,8 +52,18 @@ export default function Home() {
       StringParam as QueryParamConfig<Design["sizePreset"]>,
       designDefaults.sizePreset
     ),
-    width: withDefault(NumberParam, designDefaults.width),
-    height: withDefault(NumberParam, designDefaults.height),
+    width: withDefault(
+      NumberParam,
+      designDefaults.width ||
+        sizeOptions.find(({ value }) => value === designDefaults.sizePreset)
+          ?.width
+    ),
+    height: withDefault(
+      NumberParam,
+      designDefaults.height ||
+        sizeOptions.find(({ value }) => value === designDefaults.sizePreset)
+          ?.height
+    ),
   });
 
   const [showExportModal, setShowExportModal] = useState(false);
