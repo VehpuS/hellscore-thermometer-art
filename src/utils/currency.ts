@@ -41,12 +41,12 @@ export const formatCurrency = ({
   amount,
   currency,
   customSymbol,
-  symbolPosition,
+  currencySymbolPosition,
 }: {
   amount: number;
   currency: string;
   customSymbol?: string;
-  symbolPosition: "before" | "after";
+  currencySymbolPosition: "before" | "after";
 }) => {
   if (currency === "CUSTOM") {
     const formattedNumber = new Intl.NumberFormat("en-US", {
@@ -55,7 +55,7 @@ export const formatCurrency = ({
     }).format(amount);
 
     const symbol = customSymbol || "$";
-    return symbolPosition === "before"
+    return currencySymbolPosition === "before"
       ? `${symbol}${formattedNumber}`
       : `${formattedNumber}${symbol}`;
   }

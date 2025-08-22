@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Download, Flame, Zap } from "lucide-react";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   BooleanParam,
   NumberParam,
@@ -17,45 +17,62 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { designDefaults, type Design } from "@/types/design";
 
+const headerHeight = "100px";
+const pageComponentsPadding = "2rem";
+
 export default function Home() {
   const [design, setDesign] = useQueryParams({
     goal: withDefault(NumberParam, designDefaults.goal),
     current: withDefault(NumberParam, designDefaults.current),
     currency: withDefault(StringParam, designDefaults.currency),
     customSymbol: withDefault(StringParam, designDefaults.customSymbol),
-    symbolPosition: withDefault(
-      StringParam as QueryParamConfig<Design["symbolPosition"]>,
-      designDefaults.symbolPosition
+    currencySymbolPosition: withDefault(
+      StringParam as QueryParamConfig<Design["currencySymbolPosition"]>,
+      designDefaults.currencySymbolPosition
     ),
     title: withDefault(StringParam, designDefaults.title),
     subtitle: withDefault(StringParam, designDefaults.subtitle),
-    theme: withDefault(StringParam, designDefaults.theme),
-    fontStyle: withDefault(StringParam, designDefaults.fontStyle),
+    theme: withDefault(
+      StringParam as QueryParamConfig<Design["theme"]>,
+      designDefaults.theme
+    ),
+    fontStyle: withDefault(
+      StringParam as QueryParamConfig<Design["fontStyle"]>,
+      designDefaults.fontStyle
+    ),
     showPercentage: withDefault(BooleanParam, designDefaults.showPercentage),
     customMessage: withDefault(StringParam, designDefaults.customMessage),
-    scale: withDefault(NumberParam, designDefaults.scale),
+    scaleX: withDefault(NumberParam, designDefaults.scaleX),
+    scaleY: withDefault(NumberParam, designDefaults.scaleY),
+    previewScale: withDefault(NumberParam, designDefaults.previewScale),
     rotation: withDefault(NumberParam, designDefaults.rotation),
-    showFlames: withDefault(BooleanParam, designDefaults.showFlames),
+    translateY: withDefault(NumberParam, designDefaults.translateY),
+    showFlame: withDefault(BooleanParam, designDefaults.showFlame),
+    sizePreset: withDefault(
+      StringParam as QueryParamConfig<Design["sizePreset"]>,
+      designDefaults.sizePreset
+    ),
+    width: withDefault(NumberParam, designDefaults.width),
+    height: withDefault(NumberParam, designDefaults.height),
   });
 
   const [showExportModal, setShowExportModal] = useState(false);
   const previewRef = useRef(null);
 
-  const handleDesignChange = (field, value) => {
-    setDesign((prev) => {
-      const newDesign = { ...prev, [field]: value };
-      // If a standard currency is chosen, reset custom fields
-      if (field === "currency" && value !== "custom") {
-        newDesign.customSymbol = "";
-        newDesign.symbolPosition = "before";
-      }
-      return newDesign;
-    });
-  };
-
-  const handlePresetChange = (preset) => {
-    setDesign((prev) => ({ ...prev, ...preset }));
-  };
+  const handleDesignFieldChange = useCallback(
+    (field: keyof Design, value: Design[typeof field]) => {
+      setDesign((prev) => {
+        const newDesign = { ...prev, [field]: value };
+        // If a standard currency is chosen, reset custom fields
+        if (field === "currency" && value !== "custom") {
+          newDesign.customSymbol = "";
+          newDesign.currencySymbolPosition = "before";
+        }
+        return newDesign;
+      });
+    },
+    [setDesign]
+  );
 
   const handleExport = () => {
     setShowExportModal(true);
@@ -67,7 +84,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-red-950">
       {/* Header */}
-      <header className="bg-black/50 backdrop-blur-lg border-b border-red-900/30">
+      <header
+        className="bg-black/50 backdrop-blur-lg border-b border-red-900/30"
+        style={{ height: headerHeight }}
+      >
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <motion.div
@@ -114,10 +134,15 @@ export default function Home() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div
+          className="grid lg:grid-cols-3 gap-8"
+          style={{
+            height: `calc(100vh - ${headerHeight} - 2 * ${pageComponentsPadding})`,
+          }}
+        >
           {/* Customization Panel */}
           <motion.div
-            className="lg:col-span-1"
+            className="lg:col-span-1 h-full overflow-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -129,15 +154,14 @@ export default function Home() {
               </div>
               <CustomizationPanel
                 design={design}
-                onDesignChange={handleDesignChange}
-                onPresetChange={handlePresetChange}
+                onDesignFieldChange={handleDesignFieldChange}
               />
             </Card>
           </motion.div>
 
           {/* Preview Area */}
           <motion.div
-            className="lg:col-span-2"
+            className="lg:col-span-2 h-full overflow-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -147,8 +171,16 @@ export default function Home() {
                 <h2 className="text-xl font-bold text-white">Preview</h2>
               </div>
 
-              <div className="bg-gray-900/50 rounded-xl p-2 sm:p-4 transition-all duration-300 w-full flex items-center justify-center overflow-hidden">
-                <div className="w-full h-full overflow-hidden" ref={previewRef}>
+              <div className="bg-gray-900/50 rounded-xl p-2 sm:p-4 transition-all duration-300 w-full overflow-auto">
+                <div
+                  className="w-full h-full"
+                  ref={previewRef}
+                  style={{
+                    width: design.width,
+                    height: design.height,
+                    transform: `scale(${design.previewScale})`,
+                  }}
+                >
                   <ThermometerPreview design={design} percentage={percentage} />
                 </div>
               </div>

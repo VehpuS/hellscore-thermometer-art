@@ -1,3 +1,5 @@
+import { Crop, DollarSign, Maximize, Palette, Type } from "lucide-react";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -12,84 +14,139 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  designDefaults,
+  fontOptions,
+  sizeOptions,
+  SizePresets,
+  themeOptions,
+  type Design,
+} from "@/types/design";
 import { currencies } from "@/utils/currency";
-import { DollarSign, Maximize, Palette, Type } from "lucide-react";
 
-const themeOptions = [
-  {
-    value: "hellfire",
-    label: "Hellfire",
-    desc: "Classic red and orange flames",
-  },
-  { value: "molten", label: "Molten", desc: "Yellow and orange lava flow" },
-  { value: "shadow", label: "Shadow", desc: "Dark purples and grays" },
-  { value: "crimson", label: "Crimson", desc: "Deep red blood theme" },
-  { value: "inferno", label: "Inferno", desc: "Intense orange and black" },
-];
+export interface CustomizationPanelProps {
+  design: Design;
+  onDesignFieldChange: (
+    field: keyof Design,
+    value: Design[typeof field]
+  ) => void;
+}
 
-const fontOptions = [
-  { value: "gothic", label: "Gothic", desc: "Classic serif style" },
-  { value: "modern", label: "Modern", desc: "Clean sans-serif" },
-  { value: "metal", label: "Metal", desc: "Bold monospace" },
-  { value: "elegant", label: "Elegant", desc: "Light and refined" },
-];
-
-const sizeOptions = [
-  { value: "social", label: "Social Media (1:1)", width: 1080, height: 1080 },
-  { value: "story", label: "Story (9:16)", width: 1080, height: 1920 },
-  { value: "post", label: "Landscape (16:9)", width: 1920, height: 1080 },
-  { value: "twitter", label: "Twitter (2:1)", width: 1024, height: 512 },
-  { value: "custom", label: "Custom Size", isCustom: true },
-];
-
-export default function CustomizationPanel({
+export const CustomizationPanel: React.FC<CustomizationPanelProps> = ({
   design,
-  onDesignChange,
-  onPresetChange,
-}) {
+  onDesignFieldChange,
+}) => {
   const handleSizePresetChange = (sizeKey) => {
     const option = sizeOptions.find((o) => o.value === sizeKey);
-    if (option && !option.isCustom) {
-      onPresetChange({ width: option.width, height: option.height });
+    onDesignFieldChange("sizePreset", sizeKey);
+    if (option?.width || option?.height) {
+      onDesignFieldChange("width", option.width);
+      onDesignFieldChange("height", option.height);
     }
-    // For custom, we don't change the values, just allow editing
-    onDesignChange("sizePreset", sizeKey);
   };
 
   return (
     <div className="space-y-6">
       {/* Dimension Settings */}
-      {/* <Card className="bg-gray-900/50 border-gray-700">
+      <Card className="bg-gray-900/50 border-gray-700">
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-4">
             <Crop className="w-4 h-4 text-teal-400" />
-            <h3 className="text-white font-semibold">Export Dimensions</h3>
+            <h3 className="text-white font-semibold">Export Settings</h3>
           </div>
           <div className="space-y-4">
             <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label className="text-gray-300">Preview Scale</Label>
+                <span
+                  className="text-sm text-teal-300 relative group"
+                  style={{ minWidth: 40, display: "inline-block" }}
+                >
+                  {design.previewScale !== designDefaults.previewScale && (
+                    <button
+                      type="button"
+                      className="px-2 py-1 mr-1 text-xs bg-teal-700 text-white rounded hover:bg-teal-800 transition"
+                      onClick={() =>
+                        onDesignFieldChange(
+                          "previewScale",
+                          designDefaults.previewScale
+                        )
+                      }
+                    >
+                      Reset
+                    </button>
+                  )}
+                  <div className="group-hover:hidden w-14 py-0.5 inline-flex justify-end items-center text-end h-8">
+                    {((design.previewScale || 1) * 100).toFixed(0)}%
+                  </div>
+                  <div className="hidden group-hover:inline-flex w-14 py-0.5 justify-end h-8">
+                    <input
+                      type="number"
+                      min={5}
+                      max={100}
+                      step={1}
+                      value={((design.previewScale || 1) * 100).toFixed(0)}
+                      onChange={(e) =>
+                        onDesignFieldChange(
+                          "previewScale",
+                          Math.max(
+                            0.05,
+                            Math.min(3, Number(e.target.value) / 100)
+                          )
+                        )
+                      }
+                      className="bg-black/50 border border-teal-500 text-teal-300 rounded text-xs"
+                    />
+                  </div>
+                </span>
+              </div>
+              <Slider
+                value={[design.previewScale || 1]}
+                onValueChange={(value) =>
+                  onDesignFieldChange("previewScale", value[0])
+                }
+                min={0.05}
+                max={1}
+                step={0.01}
+                className="[&>span:first-child]:h-full [&>span:first-child]:bg-teal-500"
+              />
+            </div>
+            <div className="space-y-2">
               <Label className="text-gray-300">Size Preset</Label>
-              <Select value={design.sizePreset || 'social'} onValueChange={handleSizePresetChange}>
+              <Select
+                value={design.sizePreset || "social"}
+                onValueChange={handleSizePresetChange}
+              >
                 <SelectTrigger className="bg-black/50 border-gray-600 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-800 border-gray-600">
-                  {sizeOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value} className="text-white">
+                  {sizeOptions.map((option) => (
+                    <SelectItem
+                      key={option.value}
+                      value={option.value}
+                      className="text-white"
+                    >
                       {option.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            
-            {(design.sizePreset === 'custom') && (
+
+            {design.sizePreset === SizePresets.CUSTOM && (
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label className="text-gray-300">Width (px)</Label>
                   <Input
                     type="number"
                     value={design.width}
-                    onChange={(e) => onDesignChange('width', parseInt(e.target.value) || 0)}
+                    onChange={(e) =>
+                      onDesignFieldChange(
+                        "width",
+                        parseInt(e.target.value) || 0
+                      )
+                    }
                     className="bg-black/50 border-gray-600 text-white"
                   />
                 </div>
@@ -98,7 +155,12 @@ export default function CustomizationPanel({
                   <Input
                     type="number"
                     value={design.height}
-                    onChange={(e) => onDesignChange('height', parseInt(e.target.value) || 0)}
+                    onChange={(e) =>
+                      onDesignFieldChange(
+                        "height",
+                        parseInt(e.target.value) || 0
+                      )
+                    }
                     className="bg-black/50 border-gray-600 text-white"
                   />
                 </div>
@@ -106,7 +168,7 @@ export default function CustomizationPanel({
             )}
           </div>
         </CardContent>
-      </Card> */}
+      </Card>
 
       <Separator className="bg-gray-700" />
 
@@ -126,7 +188,7 @@ export default function CustomizationPanel({
                   type="number"
                   value={design.goal}
                   onChange={(e) =>
-                    onDesignChange("goal", parseFloat(e.target.value) || 0)
+                    onDesignFieldChange("goal", parseFloat(e.target.value) || 0)
                   }
                   className="bg-black/50 border-gray-600 text-white"
                 />
@@ -137,7 +199,10 @@ export default function CustomizationPanel({
                   type="number"
                   value={design.current}
                   onChange={(e) =>
-                    onDesignChange("current", parseFloat(e.target.value) || 0)
+                    onDesignFieldChange(
+                      "current",
+                      parseFloat(e.target.value) || 0
+                    )
                   }
                   className="bg-black/50 border-gray-600 text-white"
                 />
@@ -148,7 +213,9 @@ export default function CustomizationPanel({
               <Label className="text-gray-300">Currency</Label>
               <Select
                 value={design.currency}
-                onValueChange={(value) => onDesignChange("currency", value)}
+                onValueChange={(value) =>
+                  onDesignFieldChange("currency", value)
+                }
               >
                 <SelectTrigger className="bg-black/50 border-gray-600 text-white">
                   <SelectValue />
@@ -174,7 +241,7 @@ export default function CustomizationPanel({
                   <Input
                     value={design.customSymbol}
                     onChange={(e) =>
-                      onDesignChange("customSymbol", e.target.value)
+                      onDesignFieldChange("customSymbol", e.target.value)
                     }
                     placeholder="e.g. BTC, ⚡"
                     className="bg-black/50 border-gray-600 text-white h-8"
@@ -185,9 +252,9 @@ export default function CustomizationPanel({
                     Symbol Position
                   </Label>
                   <Select
-                    value={design.currency_position}
+                    value={design.currencySymbolPosition}
                     onValueChange={(value) =>
-                      onDesignChange("currency_position", value)
+                      onDesignFieldChange("currencySymbolPosition", value)
                     }
                   >
                     <SelectTrigger className="bg-black/50 border-gray-600 text-white h-8">
@@ -224,7 +291,7 @@ export default function CustomizationPanel({
               <Label className="text-gray-300">Main Title</Label>
               <Input
                 value={design.title}
-                onChange={(e) => onDesignChange("title", e.target.value)}
+                onChange={(e) => onDesignFieldChange("title", e.target.value)}
                 placeholder="Enter campaign title"
                 className="bg-black/50 border-gray-600 text-white"
               />
@@ -234,7 +301,9 @@ export default function CustomizationPanel({
               <Label className="text-gray-300">Subtitle</Label>
               <Input
                 value={design.subtitle}
-                onChange={(e) => onDesignChange("subtitle", e.target.value)}
+                onChange={(e) =>
+                  onDesignFieldChange("subtitle", e.target.value)
+                }
                 placeholder="Enter subtitle or description"
                 className="bg-black/50 border-gray-600 text-white"
               />
@@ -245,7 +314,7 @@ export default function CustomizationPanel({
               <Textarea
                 value={design.customMessage}
                 onChange={(e) =>
-                  onDesignChange("customMessage", e.target.value)
+                  onDesignFieldChange("customMessage", e.target.value)
                 }
                 placeholder="Call to action or motivational message"
                 className="bg-black/50 border-gray-600 text-white"
@@ -264,6 +333,26 @@ export default function CustomizationPanel({
           <div className="flex items-center gap-2 mb-4">
             <Palette className="w-4 h-4 text-purple-400" />
             <h3 className="text-white font-semibold">Visual Style</h3>
+            {(design.theme !== designDefaults.theme ||
+              design.fontStyle !== designDefaults.fontStyle ||
+              design.showPercentage !== designDefaults.showPercentage ||
+              design.showFlame !== designDefaults.showFlame) && (
+              <button
+                type="button"
+                className="ml-auto px-2 py-1 text-xs bg-teal-700 text-white rounded hover:bg-teal-800 transition"
+                onClick={() => {
+                  onDesignFieldChange("theme", designDefaults.theme);
+                  onDesignFieldChange("fontStyle", designDefaults.fontStyle);
+                  onDesignFieldChange(
+                    "showPercentage",
+                    designDefaults.showPercentage
+                  );
+                  onDesignFieldChange("showFlame", designDefaults.showFlame);
+                }}
+              >
+                Reset
+              </button>
+            )}
           </div>
 
           <div className="space-y-4">
@@ -271,7 +360,7 @@ export default function CustomizationPanel({
               <Label className="text-gray-300">Theme</Label>
               <Select
                 value={design.theme}
-                onValueChange={(value) => onDesignChange("theme", value)}
+                onValueChange={(value) => onDesignFieldChange("theme", value)}
               >
                 <SelectTrigger className="bg-black/50 border-gray-600 text-white">
                   <SelectValue />
@@ -299,7 +388,9 @@ export default function CustomizationPanel({
               <Label className="text-gray-300">Font Style</Label>
               <Select
                 value={design.fontStyle}
-                onValueChange={(value) => onDesignChange("fontStyle", value)}
+                onValueChange={(value) =>
+                  onDesignFieldChange("fontStyle", value)
+                }
               >
                 <SelectTrigger className="bg-black/50 border-gray-600 text-white">
                   <SelectValue />
@@ -328,7 +419,7 @@ export default function CustomizationPanel({
                 id="percentage"
                 checked={design.showPercentage}
                 onCheckedChange={(checked) =>
-                  onDesignChange("showPercentage", checked)
+                  onDesignFieldChange("showPercentage", checked)
                 }
                 className="border-gray-600 data-[state=checked]:bg-red-600"
               />
@@ -340,14 +431,14 @@ export default function CustomizationPanel({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="flames"
-                checked={design.showFlames}
+                checked={design.showFlame}
                 onCheckedChange={(checked) =>
-                  onDesignChange("showFlames", checked)
+                  onDesignFieldChange("showFlame", checked)
                 }
                 className="border-gray-600 data-[state=checked]:bg-red-600"
               />
               <Label htmlFor="flames" className="text-gray-300">
-                Show decorative flames
+                Show decorative flame
               </Label>
             </div>
           </div>
@@ -362,20 +453,129 @@ export default function CustomizationPanel({
           <div className="flex items-center gap-2 mb-4">
             <Maximize className="w-4 h-4 text-teal-400" />
             <h3 className="text-white font-semibold">Transform</h3>
+            {(design.scaleX !== designDefaults.scaleX ||
+              design.scaleY !== designDefaults.scaleY ||
+              design.rotation !== designDefaults.rotation ||
+              design.translateY !== designDefaults.translateY) && (
+              <button
+                type="button"
+                className="ml-auto px-2 py-1 text-xs bg-teal-700 text-white rounded hover:bg-teal-800 transition"
+                onClick={() => {
+                  onDesignFieldChange("scaleX", designDefaults.scaleX);
+                  onDesignFieldChange("scaleY", designDefaults.scaleY);
+                  onDesignFieldChange("rotation", designDefaults.rotation);
+                  onDesignFieldChange("translateY", designDefaults.translateY);
+                }}
+              >
+                Reset
+              </button>
+            )}
           </div>
           <div className="space-y-6">
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <Label className="text-gray-300">Scale</Label>
-                <span className="text-sm text-teal-300">
-                  {((design.scale || 1) * 100).toFixed(0)}%
+                <Label className="text-gray-300">Scale X</Label>
+                <span
+                  className="text-sm text-teal-300 relative group"
+                  style={{ minWidth: 40, display: "inline-block" }}
+                >
+                  {design.scaleX !== designDefaults.scaleX && (
+                    <button
+                      type="button"
+                      className="px-2 py-1 mr-1 text-xs bg-teal-700 text-white rounded hover:bg-teal-800 transition"
+                      onClick={() =>
+                        onDesignFieldChange("scaleX", designDefaults.scaleX)
+                      }
+                    >
+                      Reset
+                    </button>
+                  )}
+                  <div className="group-hover:hidden w-14 py-0.5 inline-flex justify-end items-center text-end h-8">
+                    {((design.scaleX || 1) * 100).toFixed(0)}%
+                  </div>
+                  <div className="hidden group-hover:inline-flex w-14 py-0.5 justify-end h-8">
+                    <input
+                      type="number"
+                      min={5}
+                      max={300}
+                      step={1}
+                      value={((design.scaleX || 1) * 100).toFixed(0)}
+                      onChange={(e) =>
+                        onDesignFieldChange(
+                          "scaleX",
+                          Math.max(
+                            0.05,
+                            Math.min(3, Number(e.target.value) / 100)
+                          )
+                        )
+                      }
+                      className="bg-black/50 border border-teal-500 text-teal-300 rounded text-xs"
+                      style={{ width: 48 }}
+                    />
+                  </div>
                 </span>
               </div>
               <Slider
-                value={[design.scale || 1]}
-                onValueChange={(value) => onDesignChange("scale", value[0])}
-                min={0.5}
-                max={1.5}
+                value={[design.scaleX || 1]}
+                onValueChange={(value) =>
+                  onDesignFieldChange("scaleX", value[0])
+                }
+                min={0.05}
+                max={3}
+                step={0.01}
+                className="[&>span:first-child]:h-full [&>span:first-child]:bg-teal-500"
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label className="text-gray-300">Scale Y</Label>
+                <span
+                  className="text-sm text-teal-300 relative group"
+                  style={{ minWidth: 40, display: "inline-block" }}
+                >
+                  {design.scaleY !== designDefaults.scaleY && (
+                    <button
+                      type="button"
+                      className="px-2 py-1 mr-1 text-xs bg-teal-700 text-white rounded hover:bg-teal-800 transition"
+                      onClick={() =>
+                        onDesignFieldChange("scaleY", designDefaults.scaleY)
+                      }
+                    >
+                      Reset
+                    </button>
+                  )}
+                  <div className="group-hover:hidden w-14 py-0.5 inline-flex justify-end items-center text-end h-8">
+                    {((design.scaleY || 1) * 100).toFixed(0)}%
+                  </div>
+                  <div className="hidden group-hover:inline-flex w-14 py-0.5 justify-end h-8">
+                    <input
+                      type="number"
+                      min={5}
+                      max={300}
+                      step={1}
+                      value={((design.scaleY || 1) * 100).toFixed(0)}
+                      onChange={(e) =>
+                        onDesignFieldChange(
+                          "scaleY",
+                          Math.max(
+                            0.05,
+                            Math.min(3, Number(e.target.value) / 100)
+                          )
+                        )
+                      }
+                      className="bg-black/50 border border-teal-500 text-teal-300 rounded text-xs"
+                      style={{ width: 48 }}
+                    />
+                  </div>
+                </span>
+              </div>
+              <Slider
+                value={[design.scaleY || 1]}
+                onValueChange={(value) =>
+                  onDesignFieldChange("scaleY", value[0])
+                }
+                min={0.05}
+                max={3}
                 step={0.01}
                 className="[&>span:first-child]:h-full [&>span:first-child]:bg-teal-500"
               />
@@ -383,13 +583,103 @@ export default function CustomizationPanel({
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <Label className="text-gray-300">Rotation</Label>
-                <span className="text-sm text-teal-300">
-                  {(design.rotation || 0).toFixed(0)}°
+                <span
+                  className="text-sm text-teal-300 relative group"
+                  style={{ minWidth: 40, display: "inline-block" }}
+                >
+                  {design.rotation !== designDefaults.rotation && (
+                    <button
+                      type="button"
+                      className="px-2 py-1 mr-1 text-xs bg-teal-700 text-white rounded hover:bg-teal-800 transition"
+                      onClick={() =>
+                        onDesignFieldChange("rotation", designDefaults.rotation)
+                      }
+                    >
+                      Reset
+                    </button>
+                  )}
+                  <div className="group-hover:hidden w-14 py-0.5 inline-flex justify-end items-center text-end h-8">
+                    {(design.rotation || 0).toFixed(0)}°
+                  </div>
+                  <div className="hidden group-hover:inline-flex w-14 py-0.5 justify-end h-8">
+                    <input
+                      type="number"
+                      min={-180}
+                      max={180}
+                      step={1}
+                      value={(design.rotation || 0).toFixed(0)}
+                      onChange={(e) =>
+                        onDesignFieldChange(
+                          "rotation",
+                          Math.max(-180, Math.min(180, Number(e.target.value)))
+                        )
+                      }
+                      className="bg-black/50 border border-teal-500 text-teal-300 rounded text-xs"
+                      style={{ width: 48 }}
+                    />
+                  </div>
                 </span>
               </div>
               <Slider
                 value={[design.rotation || 0]}
-                onValueChange={(value) => onDesignChange("rotation", value[0])}
+                onValueChange={(value) =>
+                  onDesignFieldChange("rotation", value[0])
+                }
+                min={-180}
+                max={180}
+                step={1}
+                className="[&>span:first-child]:h-full [&>span:first-child]:bg-teal-500"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label className="text-gray-300">Y Offset</Label>
+                <span
+                  className="text-sm text-teal-300 relative group"
+                  style={{ minWidth: 40, display: "inline-block" }}
+                >
+                  {design.translateY !== designDefaults.translateY && (
+                    <button
+                      type="button"
+                      className="px-2 py-1 mr-1 text-xs bg-teal-700 text-white rounded hover:bg-teal-800 transition"
+                      onClick={() =>
+                        onDesignFieldChange(
+                          "translateY",
+                          designDefaults.translateY
+                        )
+                      }
+                    >
+                      Reset
+                    </button>
+                  )}
+                  <div className="group-hover:hidden w-14 py-0.5 inline-flex justify-end items-center text-end h-8">
+                    {(design.translateY || 0).toFixed(0)}%
+                  </div>
+                  <div className="hidden group-hover:inline-flex w-14 py-0.5 justify-end h-8">
+                    <input
+                      type="number"
+                      min={-180}
+                      max={180}
+                      step={1}
+                      value={(design.translateY || 0).toFixed(0)}
+                      onChange={(e) =>
+                        onDesignFieldChange(
+                          "translateY",
+                          Math.max(-180, Math.min(180, Number(e.target.value)))
+                        )
+                      }
+                      className="bg-black/50 border border-teal-500 text-teal-300 rounded text-xs"
+                      style={{ width: 48 }}
+                    />
+                  </div>
+                </span>
+              </div>
+              <Slider
+                value={[design.translateY || 0]}
+                onValueChange={(value) =>
+                  onDesignFieldChange("translateY", value[0])
+                }
                 min={-180}
                 max={180}
                 step={1}
@@ -401,4 +691,6 @@ export default function CustomizationPanel({
       </Card>
     </div>
   );
-}
+};
+
+export default CustomizationPanel;
