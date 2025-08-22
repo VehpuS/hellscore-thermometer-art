@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Flame, Skull, Star } from "lucide-react";
 import { forwardRef } from "react";
 
+import type { Design } from "@/types/design";
 import { formatCurrency } from "@/utils/currency";
 
 const themes = {
@@ -51,24 +52,7 @@ const fonts = {
 
 const ThermometerPreview = forwardRef<
   HTMLDivElement,
-  {
-    design: {
-      goal: number;
-      current: number;
-      title: string;
-      subtitle: string;
-      theme: string;
-      fontStyle: string;
-      showPercentage: boolean;
-      customMessage: string;
-      scale: number;
-      rotation: number;
-      currency: string;
-      customSymbol: string;
-      symbolPosition: "before" | "after";
-    };
-    percentage: number;
-  }
+  { design: Design; percentage: number }
 >(({ design, percentage }, ref) => {
   const theme = themes[design.theme];
   const fontClass = fonts[design.fontStyle];
@@ -101,9 +85,11 @@ const ThermometerPreview = forwardRef<
         transition={{ duration: 0.8 }}
       >
         {/* Decorative flames - MOVED INSIDE BOUNDS */}
-        <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
-          <FlameIcon />
-        </div>
+        {design.showFlames && (
+          <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
+            <FlameIcon />
+          </div>
+        )}
 
         {/* Title */}
         <motion.h1
@@ -178,9 +164,11 @@ const ThermometerPreview = forwardRef<
         </motion.div>
 
         {/* Bottom flame with proper spacing */}
-        <div className="flex justify-start mt-6 mb-4">
-          <FlameIcon />
-        </div>
+        {design.showFlames && (
+          <div className="flex mt-6 mb-4 justify-center">
+            <FlameIcon />
+          </div>
+        )}
 
         {/* Stats - STAYS OUTSIDE THE TRANSFORM */}
         <motion.div

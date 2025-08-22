@@ -336,6 +336,20 @@ export default function CustomizationPanel({
                 Show percentage complete
               </Label>
             </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="flames"
+                checked={design.showFlames}
+                onCheckedChange={(checked) =>
+                  onDesignChange("showFlames", checked)
+                }
+                className="border-gray-600 data-[state=checked]:bg-red-600"
+              />
+              <Label htmlFor="flames" className="text-gray-300">
+                Show decorative flames
+              </Label>
+            </div>
           </div>
         </CardContent>
       </Card>
