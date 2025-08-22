@@ -1,4 +1,5 @@
-import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -8,20 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  DollarSign,
-  Type,
-  Palette,
-  MessageSquare,
-  Maximize,
-  RotateCw,
-} from "lucide-react";
-import { currencies } from "@/utils/currency";
 import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
+import { currencies } from "@/utils/currency";
+import { DollarSign, Maximize, Palette, Type } from "lucide-react";
 
 const themeOptions = [
   {
@@ -162,29 +154,27 @@ export default function CustomizationPanel({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-800 border-gray-600">
-                  {currencies.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value}
-                      className="text-white"
-                    >
-                      {option.label}
+                  {currencies.map((curr) => (
+                    <SelectItem key={curr.code} value={curr.code}>
+                      {curr.code === "CUSTOM"
+                        ? curr.name
+                        : `${curr.code} (${curr.symbol}) - ${curr.name}`}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {design.currency === "custom" && (
+            {design.currency === "CUSTOM" && (
               <Card className="bg-gray-800/60 border-orange-700/50 p-3 space-y-3">
                 <div className="space-y-2">
                   <Label className="text-orange-300 text-xs">
                     Custom Symbol
                   </Label>
                   <Input
-                    value={design.custom_currency_symbol}
+                    value={design.customSymbol}
                     onChange={(e) =>
-                      onDesignChange("custom_currency_symbol", e.target.value)
+                      onDesignChange("customSymbol", e.target.value)
                     }
                     placeholder="e.g. BTC, ⚡"
                     className="bg-black/50 border-gray-600 text-white h-8"
@@ -253,9 +243,9 @@ export default function CustomizationPanel({
             <div className="space-y-2">
               <Label className="text-gray-300">Custom Message</Label>
               <Textarea
-                value={design.custom_message}
+                value={design.customMessage}
                 onChange={(e) =>
-                  onDesignChange("custom_message", e.target.value)
+                  onDesignChange("customMessage", e.target.value)
                 }
                 placeholder="Call to action or motivational message"
                 className="bg-black/50 border-gray-600 text-white"
@@ -308,8 +298,8 @@ export default function CustomizationPanel({
             <div className="space-y-2">
               <Label className="text-gray-300">Font Style</Label>
               <Select
-                value={design.font_style}
-                onValueChange={(value) => onDesignChange("font_style", value)}
+                value={design.fontStyle}
+                onValueChange={(value) => onDesignChange("fontStyle", value)}
               >
                 <SelectTrigger className="bg-black/50 border-gray-600 text-white">
                   <SelectValue />
@@ -336,9 +326,9 @@ export default function CustomizationPanel({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="percentage"
-                checked={design.show_percentage}
+                checked={design.showPercentage}
                 onCheckedChange={(checked) =>
-                  onDesignChange("show_percentage", checked)
+                  onDesignChange("showPercentage", checked)
                 }
                 className="border-gray-600 data-[state=checked]:bg-red-600"
               />

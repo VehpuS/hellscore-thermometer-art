@@ -1,32 +1,47 @@
-import React, { useState, useRef } from "react";
-import { Save, Download, Flame, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import { Download, Flame, Zap } from "lucide-react";
+import { useRef, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import ThermometerPreview from "@/components/ThermometerPreview";
 import CustomizationPanel from "@/components/CustomizationPanel";
 import ExportModal from "@/components/ExportModal";
+import ThermometerPreview from "@/components/ThermometerPreview";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
+export interface Design {
+  goal: number;
+  current: number;
+  title: string;
+  subtitle: string;
+  theme: string;
+  fontStyle: string;
+  showPercentage: boolean;
+  customMessage: string;
+  scale: number;
+  rotation: number;
+  currency: string;
+  customSymbol: string;
+  symbolPosition: "before" | "after";
+}
 
 export default function Home() {
-  const [design, setDesign] = useState({
+  const [design, setDesign] = useState<Design>({
     goal: 10000,
     current: 3500,
-    currency: "USD", // Changed default currency
-    custom_currency_symbol: "",
-    currency_position: "left",
+    currency: "ILS", // Changed default currency
+    customSymbol: "",
+    symbolPosition: "before",
     title: "HELLSCORE FUNDRAISER",
-    subtitle: "Support Our Metal A Cappella Journey",
+    subtitle: "Support ...",
     theme: "hellfire",
-    font_style: "gothic",
-    show_percentage: true,
-    custom_message: "Help us bring metal to the masses!",
+    fontStyle: "gothic",
+    showPercentage: true,
+    customMessage: "Help us ...",
     scale: 1,
     rotation: 0,
   });
 
   const [showExportModal, setShowExportModal] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [savedDesigns, setSavedDesigns] = useState([]);
   const previewRef = useRef(null);
 
@@ -35,8 +50,8 @@ export default function Home() {
       const newDesign = { ...prev, [field]: value };
       // If a standard currency is chosen, reset custom fields
       if (field === "currency" && value !== "custom") {
-        newDesign.custom_currency_symbol = "";
-        newDesign.currency_position = "left";
+        newDesign.customSymbol = "";
+        newDesign.symbolPosition = "before";
       }
       return newDesign;
     });
@@ -134,13 +149,9 @@ export default function Home() {
             <Card className="bg-black/40 backdrop-blur-lg border-red-900/30 p-8">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-xl font-bold text-white">Preview</h2>
-                {/* Removed dynamic width x height display as it's no longer part of the design state */}
               </div>
 
-              <div
-                className="bg-gray-900/50 rounded-xl p-2 sm:p-4 transition-all duration-300 w-full flex items-center justify-center overflow-hidden"
-                // Removed aspectRatio style property to allow more flexible sizing of the preview container
-              >
+              <div className="bg-gray-900/50 rounded-xl p-2 sm:p-4 transition-all duration-300 w-full flex items-center justify-center overflow-hidden">
                 <div className="w-full h-full overflow-hidden" ref={previewRef}>
                   <ThermometerPreview design={design} percentage={percentage} />
                 </div>

@@ -1,44 +1,78 @@
 export const currencies = [
-    { value: 'ILS', label: 'ILS - Israeli New Shekel', symbol: '₪' },
-    { value: 'USD', label: 'USD - United States Dollar', symbol: '$' },
-    { value: 'EUR', label: 'EUR - Euro', symbol: '€' },
-    { value: 'JPY', label: 'JPY - Japanese Yen', symbol: '¥' },
-    { value: 'GBP', label: 'GBP - British Pound Sterling', symbol: '£' },
-    { value: 'AUD', label: 'AUD - Australian Dollar', symbol: '$' },
-    { value: 'CAD', label: 'CAD - Canadian Dollar', symbol: '$' },
-    { value: 'CHF', label: 'CHF - Swiss Franc', symbol: 'CHF' },
-    { value: 'CNY', label: 'CNY - Chinese Yuan', symbol: '¥' },
-    { value: 'SEK', label: 'SEK - Swedish Krona', symbol: 'kr' },
-    { value: 'NZD', label: 'NZD - New Zealand Dollar', symbol: '$' },
-    { value: 'MXN', label: 'MXN - Mexican Peso', symbol: '$' },
-    { value: 'SGD', label: 'SGD - Singapore Dollar', symbol: '$' },
-    { value: 'HKD', label: 'HKD - Hong Kong Dollar', symbol: '$' },
-    { value: 'NOK', label: 'NOK - Norwegian Krone', symbol: 'kr' },
-    { value: 'KRW', label: 'KRW - South Korean Won', symbol: '₩' },
-    { value: 'TRY', label: 'TRY - Turkish Lira', symbol: '₺' },
-    { value: 'RUB', label: 'RUB - Russian Ruble', symbol: '₽' },
-    { value: 'INR', label: 'INR - Indian Rupee', symbol: '₹' },
-    { value: 'BRL', label: 'BRL - Brazilian Real', symbol: 'R$' },
-    { value: 'ZAR', label: 'ZAR - South African Rand', symbol: 'R' },
-    { value: 'custom', label: 'Custom Currency', symbol: '' }
+  { code: "ILS", name: "Israeli Shekel", symbol: "₪" },
+  { code: "USD", name: "US Dollar", symbol: "$" },
+  { code: "EUR", name: "Euro", symbol: "€" },
+  { code: "GBP", name: "British Pound", symbol: "£" },
+  { code: "JPY", name: "Japanese Yen", symbol: "¥" },
+  { code: "CAD", name: "Canadian Dollar", symbol: "C$" },
+  { code: "AUD", name: "Australian Dollar", symbol: "A$" },
+  { code: "CHF", name: "Swiss Franc", symbol: "CHF" },
+  { code: "CNY", name: "Chinese Yuan", symbol: "¥" },
+  { code: "SEK", name: "Swedish Krona", symbol: "kr" },
+  { code: "NOK", name: "Norwegian Krone", symbol: "kr" },
+  { code: "MXN", name: "Mexican Peso", symbol: "$" },
+  { code: "SGD", name: "Singapore Dollar", symbol: "S$" },
+  { code: "HKD", name: "Hong Kong Dollar", symbol: "HK$" },
+  { code: "NZD", name: "New Zealand Dollar", symbol: "NZ$" },
+  { code: "KRW", name: "South Korean Won", symbol: "₩" },
+  { code: "TRY", name: "Turkish Lira", symbol: "₺" },
+  { code: "RUB", name: "Russian Ruble", symbol: "₽" },
+  { code: "INR", name: "Indian Rupee", symbol: "₹" },
+  { code: "BRL", name: "Brazilian Real", symbol: "R$" },
+  { code: "ZAR", name: "South African Rand", symbol: "R" },
+  { code: "PLN", name: "Polish Złoty", symbol: "zł" },
+  { code: "CZK", name: "Czech Koruna", symbol: "Kč" },
+  { code: "DKK", name: "Danish Krone", symbol: "kr" },
+  { code: "HUF", name: "Hungarian Forint", symbol: "Ft" },
+  { code: "CLP", name: "Chilean Peso", symbol: "$" },
+  { code: "PHP", name: "Philippine Peso", symbol: "₱" },
+  { code: "AED", name: "UAE Dirham", symbol: "د.إ" },
+  { code: "COP", name: "Colombian Peso", symbol: "$" },
+  { code: "SAR", name: "Saudi Riyal", symbol: "﷼" },
+  { code: "MYR", name: "Malaysian Ringgit", symbol: "RM" },
+  { code: "RON", name: "Romanian Leu", symbol: "lei" },
+  { code: "THB", name: "Thai Baht", symbol: "฿" },
+  { code: "BGN", name: "Bulgarian Lev", symbol: "лв" },
+  { code: "HRK", name: "Croatian Kuna", symbol: "kn" },
+  { code: "CUSTOM", name: "Custom Currency", symbol: "" },
 ];
 
-export const getCurrencySymbol = (currencyCode) => {
-    if (!currencyCode || currencyCode === 'custom') return '';
-    const currency = currencies.find(c => c.value === currencyCode);
-    return currency ? currency.symbol : currencyCode;
-};
+export const formatCurrency = ({
+  amount,
+  currency,
+  customSymbol,
+  symbolPosition,
+}: {
+  amount: number;
+  currency: string;
+  customSymbol?: string;
+  symbolPosition: "before" | "after";
+}) => {
+  if (currency === "CUSTOM") {
+    const formattedNumber = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
 
-export const formatCurrency = (amount, design) => {
-    const { currency, custom_currency_symbol, currency_position } = design;
-    const value = (amount || 0).toLocaleString();
+    const symbol = customSymbol || "$";
+    return symbolPosition === "before"
+      ? `${symbol}${formattedNumber}`
+      : `${formattedNumber}${symbol}`;
+  }
 
-    if (currency === 'custom') {
-        const symbol = custom_currency_symbol || '';
-        return currency_position === 'right' ? `${value}${symbol}` : `${symbol}${value}`;
-    } else {
-        const symbol = getCurrencySymbol(currency);
-        // Standard currencies are positioned on the left for simplicity.
-        return `${symbol}${value}`;
-    }
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency || "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  } catch (error) {
+    // Fallback for unsupported currencies
+    const formattedNumber = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+    return `${currency} ${formattedNumber}`;
+  }
 };

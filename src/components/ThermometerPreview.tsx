@@ -1,6 +1,6 @@
-import React, { forwardRef } from "react";
 import { motion } from "framer-motion";
 import { Flame, Skull, Star } from "lucide-react";
+import { forwardRef } from "react";
 
 import { formatCurrency } from "@/utils/currency";
 
@@ -58,17 +58,20 @@ const ThermometerPreview = forwardRef<
       title: string;
       subtitle: string;
       theme: string;
-      font_style: string;
-      show_percentage: boolean;
-      custom_message: string;
+      fontStyle: string;
+      showPercentage: boolean;
+      customMessage: string;
       scale: number;
       rotation: number;
+      currency: string;
+      customSymbol: string;
+      symbolPosition: "before" | "after";
     };
     percentage: number;
   }
 >(({ design, percentage }, ref) => {
   const theme = themes[design.theme];
-  const fontClass = fonts[design.font_style];
+  const fontClass = fonts[design.fontStyle];
 
   const FlameIcon = () => (
     <motion.div
@@ -186,7 +189,7 @@ const ThermometerPreview = forwardRef<
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2 }}
         >
-          {design.show_percentage && (
+          {design.showPercentage && (
             <div className={`text-4xl font-bold ${theme.accent} ${fontClass}`}>
               {percentage.toFixed(1)}%
             </div>
@@ -194,21 +197,39 @@ const ThermometerPreview = forwardRef<
 
           <div className="text-white space-y-1">
             <div className={`text-xl font-semibold ${fontClass}`}>
-              {formatCurrency(design.current, design)}
+              {formatCurrency(
+                // design.current, design
+                {
+                  amount: design.current,
+                  currency: design.currency,
+                  customSymbol: design.customSymbol,
+                  symbolPosition: design.symbolPosition,
+                }
+              )}
             </div>
             <div className="text-gray-300 text-sm">
-              of {formatCurrency(design.goal, design)} goal
+              of{" "}
+              {formatCurrency(
+                // design.goal, design
+                {
+                  amount: design.goal,
+                  currency: design.currency,
+                  customSymbol: design.customSymbol,
+                  symbolPosition: design.symbolPosition,
+                }
+              )}{" "}
+              goal
             </div>
           </div>
 
-          {design.custom_message && (
+          {design.customMessage && (
             <motion.div
               className={`text-center ${theme.accent} text-sm ${fontClass} mt-4 px-4 py-2 bg-black/30 rounded-lg`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.5 }}
             >
-              {design.custom_message}
+              {design.customMessage}
             </motion.div>
           )}
         </motion.div>
