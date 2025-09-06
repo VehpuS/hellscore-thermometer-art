@@ -1,7 +1,6 @@
 import { sizeOptions, SizePresets, type Design } from "@/types/design";
 import { Crop } from "lucide-react";
 import { DesignResetButton } from "./DesignResetButton";
-import { DesignValueSlider } from "./DesignValueSlider";
 import { PanelAccordionItem } from "./PanelAccordionItem";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -45,16 +44,6 @@ export const ExportSettingsControls: React.FC<{
       }
     >
       <div className="space-y-4">
-        <DesignValueSlider
-          label="Preview Scale"
-          field="previewScale"
-          design={design}
-          onDesignFieldChange={onDesignFieldChange}
-          isPercentage
-          min={0.01}
-          max={3}
-          step={0.01}
-        />
         <div className="space-y-2">
           <Label className="text-gray-300">Size Preset</Label>
           <Select

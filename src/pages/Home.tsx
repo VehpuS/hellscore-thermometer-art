@@ -11,6 +11,7 @@ import {
 } from "use-query-params";
 
 import CustomizationPanel from "@/components/CustomizationPanel";
+import { DesignValueSlider } from "@/components/DesignValueSlider";
 import ExportModal from "@/components/ExportModal";
 import ThermometerPreview from "@/components/ThermometerPreview";
 import { Button } from "@/components/ui/button";
@@ -123,14 +124,6 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              {/* <Button
-                onClick={saveDesign}
-                variant="outline"
-                className="border-red-600 text-red-400 hover:bg-red-600/20"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Save Design
-              </Button> */}
               <Button
                 onClick={handleExport}
                 className="bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 text-white shadow-lg"
@@ -177,11 +170,22 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             <Card className="bg-black/40 backdrop-blur-lg border-red-900/30 p-8">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-xl font-bold text-white">Preview</h2>
+              <div className="flex items-center justify-between mb-8 sticky top-0 left-0 z-10 px-2 bg-black/80 pb-3 flex-col">
+                <h2 className="text-xl w-full font-bold text-white">Preview</h2>
+                <div className="w-full flex justify-start">
+                  <DesignValueSlider
+                    label="Preview Scale"
+                    field="previewScale"
+                    design={design}
+                    onDesignFieldChange={handleDesignFieldChange}
+                    isPercentage
+                    min={0.01}
+                    max={3}
+                    step={0.01}
+                  />
+                </div>
               </div>
-
-              <div className="bg-gray-900/50 rounded-xl p-2 sm:p-4 transition-all duration-300 w-full overflow-auto">
+              <div className="bg-gray-900/50 rounded-xl p-2 sm:p-4 transition-all duration-300 w-full overflow-auto select-none">
                 <div
                   className="w-full h-full"
                   ref={previewRef}
