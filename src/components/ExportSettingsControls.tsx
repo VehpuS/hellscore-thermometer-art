@@ -1,6 +1,5 @@
 import { sizeOptions, SizePresets, type Design } from "@/types/design";
 import { Crop } from "lucide-react";
-import { DesignResetButton } from "./DesignResetButton";
 import { PanelAccordionItem } from "./PanelAccordionItem";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -35,11 +34,6 @@ export const ExportSettingsControls: React.FC<{
         <div className="flex items-center gap-2 my-4">
           <Crop className="w-4 h-4 text-teal-400" />
           <h3 className="text-white font-semibold">Export Settings</h3>
-          <DesignResetButton
-            fieldsToReset={["previewScale"]}
-            design={design}
-            onDesignFieldChange={onDesignFieldChange}
-          />
         </div>
       }
     >

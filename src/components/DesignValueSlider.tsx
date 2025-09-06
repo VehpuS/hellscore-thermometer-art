@@ -32,7 +32,7 @@ export const DesignValueSlider: React.FC<{
 }) => {
   const currentValue = design[field] ?? designDefaults[field];
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full">
       <div className="flex justify-between items-center">
         <Label className="text-gray-300">{label}</Label>
         <span
